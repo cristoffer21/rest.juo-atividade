@@ -1,5 +1,5 @@
 export interface CartItem {
-  productId: string;
+  productId: string; // Certifique-se de que está em camelCase
   quantity: number;
 }
 

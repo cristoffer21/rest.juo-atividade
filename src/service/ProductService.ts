@@ -1,27 +1,27 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { Product } from 'src/model/Product'
-import { products } from '../data/Products'
-import { ProductGql } from 'src/model/ProductGql'
+import { Injectable } from '@nestjs/common';
+import { Product } from '../model/Product';
 
 @Injectable()
 export class ProductService {
-  findProductById(id: string): Product {
-    const product = products.find(p => p.id === id)
+  private products: Product[] = [
+    { id: '1', name: 'Product A', price: 100 },
+    { id: '2', name: 'Product B', price: 200 },
+    { id: '3', name: 'Product C', price: 300 },
+  ];
 
-    if (!product) {
-      throw new NotFoundException('Produto não encontrado')
-    }
-
-    return product
+  getAllProducts(): Product[] {
+    return this.products;
   }
 
-  findProductGqlById(id: string): ProductGql {
-    const product = products.find(p => p.id === id)
+  getProductById(id: string): Product | undefined {
+    return this.products.find(product => product.id === id);
+  }
 
-    if (!product) {
-      throw new NotFoundException('Produto não encontrado')
-    }
+  findProductById(id: string): Product | undefined {
+    return this.getProductById(id); // Reutiliza o método existente
+  }
 
-    return product
+  findProductGqlById(id: string): Product | undefined {
+    return this.getProductById(id); // Reutiliza o método existente
   }
 }

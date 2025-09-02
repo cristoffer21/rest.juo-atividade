@@ -15,4 +15,5 @@ type ProductGql {
 
 type Query {
   products(id: String!): ProductGql!
+  getProduct(id: String!): ProductGql
 }

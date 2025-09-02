@@ -10,4 +10,9 @@ export class ProductResolver {
   products(@Args('id', { type: () => String }) id: string) {
     return this.productService.findProductGqlById(id)
   }
+
+  @Query(() => ProductGql, { nullable: true })
+  getProduct(@Args('id') id: string) {
+    return this.productService.findProductGqlById(id);
+  }
 }
