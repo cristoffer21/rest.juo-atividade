@@ -16,7 +16,7 @@ export class AppController {
   }
 
   @Get('product/:id')
-  getProduct(@Param('id') id: string) {
-    return this.productService.findProductById(id);
+  getProductById(@Param('id') id: string): Product {
+    return this.productService.findProductById(id)
   }
 }

@@ -3,13 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CartController } from './CartController';
 import { CartService } from './service/CartService';
-import { ProductService } from './service/ProductService';
-import { ProductResolver } from './app.resolver';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
-import { join } from 'path';
-import { ProductController } from './ProductController';
-import { HealthController } from './HealthController';
+import { ProductService } from './service/ProductService'
+import { ProductResolver } from './app.resolver'
+import { GraphQLModule } from '@nestjs/graphql'
+import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo'
+import { join } from 'path'
 
 @Module({
   imports: [
@@ -18,7 +16,7 @@ import { HealthController } from './HealthController';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
   ],
-  controllers: [AppController, CartController, ProductController, HealthController],
+  controllers: [AppController, CartController],
   providers: [AppService, CartService, ProductService, ProductResolver],
 })
 export class AppModule {}

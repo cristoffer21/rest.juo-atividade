@@ -1,42 +1,70 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+
+import { Injectable } from '@nestjs/common';
 import { Cart, CartItem } from '../model/Cart';
-import { ProductService } from './ProductService';
+import { products } from '../data/Products';
 
 @Injectable()
 export class CartService {
   private carts: Cart[] = [];
 
-  constructor(private readonly productService: ProductService) {}
-
-  createCart(id: string): Cart {
-    const cart: Cart = { id, items: [] };
-    this.carts.push(cart);
-    console.log(`Created Cart: ${JSON.stringify(cart)}`); // Adicionar log para verificar o carrinho criado
-    return cart;
-  }
-
-  addItem(cartId: string, item: CartItem): Cart | undefined {
-    const product = this.productService.getProductById(item.productId);
-    if (!product) {
-      throw new NotFoundException(`Product with ID ${item.productId} not found`);
+  updateItemProductId(cartId: string, oldProductId: string, newProductId: string, quantity: number): Cart | undefined {
+    // Verifica se o novo produto existe
+    const productExists = products.some(p => p.id === newProductId);
+    if (!productExists) {
+      throw new Error('Produto não encontrado');
     }
-
     const cart = this.carts.find(c => c.id === cartId);
     if (cart) {
-      const existing = cart.items.find(i => i.productId === item.productId); // Certifique-se de usar "productId"
-      if (existing) {
-        existing.quantity += item.quantity;
-      } else {
-        cart.items.push(item);
-      }
-      console.log(`Updated Cart: ${JSON.stringify(cart)}`); // Adicionar log para verificar o estado do carrinho
+      // Remove o item antigo
+      cart.items = cart.items.filter(i => i.productId !== oldProductId);
+      // Adiciona o novo item
+      cart.items.push({ productId: newProductId, quantity });
       return cart;
     }
     return undefined;
   }
 
-  getCart(cartId: string): Cart | undefined {
-    return this.carts.find(c => c.id === cartId);
+
+
+  createCart(id: string): Cart {
+    const cart: Cart = { id, items: [] };
+    this.carts.push(cart);
+    return cart;
+  }
+
+  addItem(cartId: string, item: CartItem): Cart | undefined {
+    // Verifica se o produto existe
+    const productExists = products.some(p => p.id === item.productId);
+    if (!productExists) {
+      throw new Error('Produto não encontrado');
+    }
+    const cart = this.carts.find(c => c.id === cartId);
+    if (cart) {
+      const existing = cart.items.find(i => i.productId === item.productId);
+      if (existing) {
+        existing.quantity += item.quantity;
+      } else {
+        cart.items.push(item);
+      }
+      return cart;
+    }
+    return undefined;
+  }
+
+  getCart(cartId: string): any {
+    const cart = this.carts.find(c => c.id === cartId);
+    if (!cart) return undefined;
+    // Filtra itens inválidos e retorna produto completo
+    const items = cart.items
+      .filter(i => i.productId && typeof i.quantity === 'number' && i.quantity > 0)
+      .map(i => {
+        const product = products.find(p => p.id === i.productId);
+        return product
+          ? { product, quantity: i.quantity }
+          : null;
+      })
+      .filter(Boolean);
+    return { id: cart.id, items };
   }
 
   removeItem(cartId: string, productId: string): Cart | undefined {
@@ -46,38 +74,5 @@ export class CartService {
       return cart;
     }
     return undefined;
-  }
-
-  updateItemQuantity(cartId: string, productId: string, quantity: number): Cart {
-    console.log(`Cart ID: ${cartId}, Product ID: ${productId}, New Quantity: ${quantity}`);
-    const cart = this.carts.find(c => c.id === cartId);
-    console.log(`Found Cart: ${JSON.stringify(cart)}`);
-    if (!cart) {
-      throw new NotFoundException(`Cart with ID ${cartId} not found`);
-    }
-    const item = cart.items.find(i => i.productId === productId); // Certifique-se de que "productId" está correto
-    console.log(`Found Item: ${JSON.stringify(item)}`);
-    if (!item) {
-      throw new NotFoundException(`Item with Product ID ${productId} not found in cart`);
-    }
-    item.quantity = quantity;
-    console.log(`Updated item: ${JSON.stringify(item)}`);
-    return cart;
-  }
-
-  deleteCart(cartId: string): boolean {
-    const index = this.carts.findIndex(c => c.id === cartId);
-    if (index !== -1) {
-      this.carts.splice(index, 1);
-      console.log(`Deleted Cart with ID: ${cartId}`);
-      return true;
-    }
-    console.log(`Cart with ID ${cartId} not found`);
-    return false;
-  }
-
-  getAllCarts(): Cart[] {
-    console.log(`All Carts: ${JSON.stringify(this.carts)}`);
-    return this.carts;
   }
 }
