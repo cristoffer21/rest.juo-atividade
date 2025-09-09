@@ -21,4 +21,12 @@ export class ProductService {
     const p = this.findProductById(id)
     return { id: p.id, name: p.name, price: p.price }
   }
+
+  getAllProducts(): Product[] {
+    return this.products
+  }
+
+  getProductById(id: string): Product {
+    return this.findProductById(id)
+  }
 }
