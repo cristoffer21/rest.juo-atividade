@@ -1,28 +1,13 @@
-import { Field, Float, ObjectType } from '@nestjs/graphql'
+import { ObjectType, Field, ID, Float } from '@nestjs/graphql'
 
 @ObjectType()
 export class ProductGql {
-  @Field()
-  id: string
+  @Field(() => ID)
+  id!: string
 
   @Field()
-  name: string
+  name!: string
 
   @Field(() => Float)
-  price: number
-
-  @Field(() => Float, { nullable: true })
-  originalPrice?: number
-
-  @Field()
-  description: string
-
-  @Field()
-  image: string
-
-  @Field()
-  category: string
-
-  @Field()
-  inStock: boolean
+  price!: number
 }

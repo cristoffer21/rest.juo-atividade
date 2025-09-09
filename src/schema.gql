@@ -3,14 +3,14 @@
 # ------------------------------------------------------
 
 type ProductGql {
-  id: String!
-  name: String!
-  price: Float!
-  originalPrice: Float
-  description: String!
-  image: String!
   category: String!
+  description: String!
+  id: String!
+  image: String!
   inStock: Boolean!
+  name: String!
+  originalPrice: Float
+  price: Float!
 }
 
 type Query {
